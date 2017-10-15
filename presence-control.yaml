@@ -1,0 +1,38 @@
+---
+Author: Cristtopher Quintana T <cquintana@axxezo.com>
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: presence-control
+  namespace: production
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: presence-control
+    spec:
+      containers:
+        - name: prc-web
+          image: "axxezo.azurecr.io/prc-web"
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: azurecr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: presence-control
+  namespace: production
+  labels:
+    app: presence-control
+spec: 
+  ports:
+  - name: prc-web
+    port: 3000
+    targetPort: 3000
+  type: LoadBalancer
+  selector:
+    app: presence-control
